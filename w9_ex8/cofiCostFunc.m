@@ -11,11 +11,10 @@ X = reshape(params(1:num_movies*num_features), num_movies, num_features);
 Theta = reshape(params(num_movies*num_features+1:end), ...
                 num_users, num_features);
 
-            
 % You need to return the following values correctly
-J = 0;
-X_grad = zeros(size(X));
-Theta_grad = zeros(size(Theta));
+%J = 0;
+%X_grad = zeros(size(X));
+%Theta_grad = zeros(size(Theta));
 
 % ====================== YOUR CODE HERE ======================
 % Instructions: Compute the cost function and gradient for collaborative
@@ -40,19 +39,38 @@ Theta_grad = zeros(size(Theta));
 %                     partial derivatives w.r.t. to each element of Theta
 %
 
+% WORKS
+%J = sum(sum((((X * Theta') .* R) - Y) .^ 2)) / 2;
+%for i=1:size(X,1)
+%    for k=1:size(X, 2)
+%        for j=1:size(Theta,1)
+%            if R(i,j) == 1
+%                X_grad(i, k) = X_grad(i, k) + (X(i,:)*Theta(j,:)' - Y(i,j))*Theta(j,k);
+%            end
+%        end
+%    end
+%end
+%for j=1:size(Theta,1)
+%    for k=1:size(Theta, 2)
+%        for i=1:size(X,1)
+%            if R(i,j) == 1
+%                Theta_grad(j, k) = Theta_grad(j, k) + (X(i,:)*Theta(j,:)' - Y(i,j))*X(i,k);
+%            end
+%        end
+%    end
+%end
 
+smat = (X*Theta' - Y) .* R;
 
+J = sum(sum(smat .^ 2))/2 + lambda/2 * sum(sum(Theta .^ 2)) + lambda/2 * sum(sum(X .^ 2));
 
+for i=1:size(X,1)
+    X_grad(i, :) = smat(i,:) * Theta + lambda*X(i,:);
+end
 
-
-
-
-
-
-
-
-
-
+for j=1:size(Theta,1)
+    Theta_grad(j, :) = smat(:,j)' * X + lambda*Theta(j,:);
+end
 
 
 % =============================================================
